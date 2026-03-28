@@ -7,6 +7,7 @@ DNS server and container orchestrator that starts/stops container on demand to k
 - proxy out of podman network (integrate services in ide/out of podman network for debugging)
 - integrate public dns like google
 - memory pressure
+- delete container/cleanup?
 
 ```bash
 sudo podman build -t=spring-service .

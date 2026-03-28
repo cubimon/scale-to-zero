@@ -22,17 +22,25 @@ const (
 type Service struct {
 	Image         string `yaml:"image"`
 	Host          string `yaml:"host"`
-	ProxyIp       string `yaml:"ip"` // TODO: autoassign
 	ContainerPort int    `yaml:"container_port"`
 	state         ServiceState
+	proxyIp       string
 	containerIp   string
 	activeCount   int
 	lastActive    time.Time
 	mu            sync.Mutex
 }
 
+type IPAM struct {
+	Start string `yaml:"start"`
+	End   string `yaml:"end"`
+}
+
 type Config struct {
 	Services []Service `yaml:"services"`
+	IPAM     IPAM      `yaml:"ipam"`
+	IP       string    `yaml:"ip"`
+	Iface    string    `yaml:"iface"`
 }
 
 // loadConfig reads the yaml file and returns the populated Config struct

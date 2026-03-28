@@ -3,6 +3,7 @@ package registry
 import (
 	"container/list"
 	"context"
+	"encoding/binary"
 	"fmt"
 	"net"
 	"os"
@@ -24,26 +25,85 @@ type ServiceRegistry struct {
 	conn      context.Context
 }
 
+func isAddrIPv4(addr net.Addr) bool {
+	switch v := addr.(type) {
+	case *net.TCPAddr:
+		return v.IP.To4() != nil
+	case *net.UDPAddr:
+		return v.IP.To4() != nil
+	case *net.IPAddr:
+		return v.IP.To4() != nil
+	}
+	return false
+}
+
+func getIPv4(addr net.Addr) net.IP {
+	var ip net.IP
+	switch v := addr.(type) {
+	case *net.TCPAddr:
+		ip = v.IP
+	case *net.UDPAddr:
+		ip = v.IP
+	case *net.IPAddr:
+		ip = v.IP
+	default:
+		return nil
+	}
+	return ip.To4()
+}
+
+func intToIP4(ipInt uint32) string {
+	ipBytes := make(net.IP, 4)
+	binary.BigEndian.PutUint32(ipBytes, ipInt)
+	return ipBytes.String()
+}
+
+func flushIPRange(ifaceName, rangeStart, rangeEnd string) error {
+	iface, err := net.InterfaceByName(ifaceName)
+	if err != nil {
+		return fmt.Errorf("Could not find interface %s: %v", ifaceName, err)
+	}
+	addrs, err := iface.Addrs()
+	if err != nil {
+		fmt.Println("Failed to get interface ip addresses")
+		return err
+	}
+	rangeStartInt := binary.BigEndian.Uint32(net.ParseIP(rangeStart).To4())
+	rangeEndInt := binary.BigEndian.Uint32(net.ParseIP(rangeStart).To4())
+	for _, addr := range addrs {
+		if !isAddrIPv4(addr) {
+			continue
+		}
+		addrIP4 := getIPv4(addr)
+		addrInt := binary.BigEndian.Uint32(addrIP4)
+		if rangeStartInt <= addrInt && addrInt <= rangeEndInt {
+			fmt.Println("Removing ip address", addrIP4)
+			cmd := exec.Command("ip", "addr", "del", addrIP4.String()+"/32", "dev", ifaceName)
+			err := cmd.Run()
+			if err != nil {
+				fmt.Println("Failed to remove ip address")
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func ensureIP(ifaceName, targetIP string) error {
-	// 1. Get the interface by name (e.g., "eth0")
 	iface, err := net.InterfaceByName(ifaceName)
 	if err != nil {
 		return fmt.Errorf("could not find interface %s: %v", ifaceName, err)
 	}
-	// 2. Get all addresses currently assigned to it
 	addrs, err := iface.Addrs()
 	if err != nil {
 		return err
 	}
-	// 3. Check if our target IP is already in the list
 	for _, addr := range addrs {
-		// addr.String() usually looks like "10.88.0.11/32"
 		if strings.HasPrefix(addr.String(), targetIP) {
 			fmt.Printf("[Network] IP %s is already set on %s. Skipping.\n", targetIP, ifaceName)
 			return nil
 		}
 	}
-	// 4. If not found, add it
 	fmt.Printf("[Network] Adding IP %s to %s...\n", targetIP, ifaceName)
 	cmd := exec.Command("ip", "addr", "add", targetIP+"/32", "dev", ifaceName)
 	return cmd.Run()
@@ -64,19 +124,34 @@ func NewRegistry() (*ServiceRegistry, error) {
 		conn:      conn,
 	}
 	cfg := loadConfig("services.yml")
+	flushIPRange(cfg.Iface, cfg.IPAM.Start, cfg.IPAM.End)
+	ipamNext := binary.BigEndian.Uint32(
+		net.ParseIP(cfg.IPAM.Start).To4())
+	ipamLast := binary.BigEndian.Uint32(
+		net.ParseIP(cfg.IPAM.End).To4())
 	for i := range cfg.Services {
 		service := &cfg.Services[i]
 		service.state = Unknown
+		if ipamNext > ipamLast {
+			panic("Not enough ip addresses")
+		}
+		service.proxyIp = intToIP4(ipamNext)
+		ipamNext++
 		service.containerIp = ""
 		service.activeCount = 0
 		service.lastActive = time.UnixMilli(0)
 		service.mu = sync.Mutex{}
 		reg.updateContainerState(service)
 
-		ensureIP("eth0", service.ProxyIp)
+		ensureIP(cfg.Iface, service.proxyIp)
+		if ipamNext > ipamLast {
+			panic("Not enough ip addresses")
+		}
+		reg.createContainerUnsafe(service, intToIP4(ipamNext))
+		ipamNext++
 
 		reg.dnsMap[dnsutil.Fqdn(service.Host)] = service
-		reg.ipMap[service.ProxyIp] = service
+		reg.ipMap[service.proxyIp] = service
 		element := reg.lruList.PushBack(service)
 		reg.lruLookup[service] = element
 	}

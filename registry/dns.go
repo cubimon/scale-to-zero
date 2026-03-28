@@ -30,7 +30,7 @@ func (r *ServiceRegistry) startDNS() {
 				r.startContainerUnsafe(service)
 			}
 			service.mu.Unlock()
-			rr, err := dns.New(fmt.Sprintf("%s 60 IN A %s", q.Header().Name, service.ProxyIp))
+			rr, err := dns.New(fmt.Sprintf("%s 60 IN A %s", q.Header().Name, service.proxyIp))
 			if err == nil {
 				m.Answer = append(m.Answer, rr)
 			}

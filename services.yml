@@ -1,14 +1,12 @@
-# services.yaml
-network:
-  interface: "eth0"
-  subnet_mask: "/24"
-
+ip: "172.20.0.2"
+iface: "eth0"
+ipam:
+  start: "172.20.0.3"
+  end: "172.20.0.254"
 services:
   - image: "localhost/spring-service:latest"
     host: "orders-service"
-    ip: "172.20.0.14"
     container_port: 8080
   - image: "localhost/spring-service:latest"
     host: "inventory-service"
-    ip: "172.20.0.15"
     container_port: 8080

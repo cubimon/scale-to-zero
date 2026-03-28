@@ -2,6 +2,7 @@ package registry
 
 import (
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/containers/podman/v6/pkg/bindings/containers"
@@ -99,49 +100,46 @@ func (r *ServiceRegistry) startContainerUnsafe(service *Service) error {
 		return fmt.Errorf("Can't start container that is still stopping")
 	}
 	// service.state == StateStopped || service.state == Unknown
-	fmt.Println("Waking ", service.Host)
-	containerExists, _ := containers.Exists(r.conn, service.containerName(), nil)
-	if !containerExists {
-		err := r.createContainerUnsafe(service)
-		if err != nil {
-			fmt.Printf("failed to create: %v", err)
-		}
-		err = containers.Start(r.conn, service.containerName(), nil)
-		if err != nil {
-			fmt.Printf("failed to start: %v", err)
-		}
+	fmt.Println("Starting ", service.Host)
+	report, _ := containers.Inspect(r.conn, service.containerName(), nil)
+	if report.State.Checkpointed {
+		fmt.Println("Restoring container ", service.containerName())
+		// restore with tcp, since we checkpoint with tcp
+		opts := new(containers.RestoreOptions).
+			WithTCPEstablished(true)
+		containers.Restore(r.conn, service.containerName(), opts)
 	} else {
-		report, _ := containers.Inspect(r.conn, service.containerName(), nil)
-		if report.State.Checkpointed {
-			fmt.Println("Restoring container ", service.containerName())
-			// restore with tcp, since we checkpoint with tcp
-			opts := new(containers.RestoreOptions).
-				WithTCPEstablished(true)
-			containers.Restore(r.conn, service.containerName(), opts)
-		} else {
-			fmt.Println("Starting container ", service.containerName())
-			containers.Start(r.conn, service.containerName(), nil)
-		}
+		fmt.Println("Starting container ", service.containerName())
+		containers.Start(r.conn, service.containerName(), nil)
 	}
 	service.state = StateStarting
 	return nil
 }
 
-func (r *ServiceRegistry) createContainerUnsafe(service *Service) error {
-	s := specgen.NewSpecGenerator(service.Image, false)
-	s.Name = service.containerName()
-	s.Networks = map[string]nettypes.PerNetworkOptions{
-		"internal-proxy-net": {},
+func (r *ServiceRegistry) createContainerUnsafe(service *Service, ipAddress string) error {
+	containerExists, _ := containers.Exists(r.conn, service.containerName(), nil)
+	if containerExists {
+		return nil
 	}
-	s.NetNS = specgen.Namespace{
+	spec := specgen.NewSpecGenerator(service.Image, false)
+	spec.Name = service.containerName()
+	spec.Networks = map[string]nettypes.PerNetworkOptions{
+		"internal-proxy-net": {
+			StaticIPs: []net.IP{
+				net.ParseIP(ipAddress),
+			},
+		},
+	}
+	spec.NetNS = specgen.Namespace{
 		NSMode: specgen.Bridge,
 	}
-	_, err := containers.CreateWithSpec(r.conn, s, nil)
+	_, err := containers.CreateWithSpec(r.conn, spec, nil)
 	if err != nil {
 		// If it exists, we just want to start it.
 		// In production, check if the error is "already exists"
 		fmt.Printf("Container creation skipped/failed: %v\n", err)
 	}
+	service.state = StateStopped
 	return err
 }
 
