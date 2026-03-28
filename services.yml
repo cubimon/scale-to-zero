@@ -6,6 +6,8 @@ ipam:
 janitor:
   poll_interval: 5
   timeout: 120
+dns:
+  upstream: "8.8.8.8"
 services:
   - image: "localhost/spring-service:latest"
     host: "orders-service"

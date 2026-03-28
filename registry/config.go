@@ -41,11 +41,16 @@ type Janitor struct {
 	Timeout      int `yaml:"timeout"`
 }
 
+type DNS struct {
+	Upstream string `yaml:"upstream"`
+}
+
 type Config struct {
 	IP       string    `yaml:"ip"`
 	Iface    string    `yaml:"iface"`
 	IPAM     IPAM      `yaml:"ipam"`
 	Janitor  Janitor   `yaml:"janitor"`
+	DNS      DNS       `yaml:"dns"`
 	Services []Service `yaml:"services"`
 }
 
