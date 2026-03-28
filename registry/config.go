@@ -36,15 +36,21 @@ type IPAM struct {
 	End   string `yaml:"end"`
 }
 
+type Janitor struct {
+	PollInterval int `yaml:"poll_interval"`
+	Timeout      int `yaml:"timeout"`
+}
+
 type Config struct {
-	Services []Service `yaml:"services"`
-	IPAM     IPAM      `yaml:"ipam"`
 	IP       string    `yaml:"ip"`
 	Iface    string    `yaml:"iface"`
+	IPAM     IPAM      `yaml:"ipam"`
+	Janitor  Janitor   `yaml:"janitor"`
+	Services []Service `yaml:"services"`
 }
 
 // loadConfig reads the yaml file and returns the populated Config struct
-func loadConfig(path string) *Config {
+func loadConfig(path string) Config {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatalf("CRITICAL: Could not read config file at %s: %v", path, err)
@@ -54,5 +60,5 @@ func loadConfig(path string) *Config {
 	if err != nil {
 		log.Fatalf("CRITICAL: Failed to parse YAML: %v", err)
 	}
-	return &cfg
+	return cfg
 }

@@ -17,6 +17,7 @@ import (
 )
 
 type ServiceRegistry struct {
+	cfg       Config
 	dnsMap    map[string]*Service // host -> service
 	ipMap     map[string]*Service // ip -> service
 	lruList   *list.List
@@ -124,6 +125,7 @@ func NewRegistry() (*ServiceRegistry, error) {
 		conn:      conn,
 	}
 	cfg := loadConfig("services.yml")
+	reg.cfg = cfg
 	flushIPRange(cfg.Iface, cfg.IPAM.Start, cfg.IPAM.End)
 	ipamNext := binary.BigEndian.Uint32(
 		net.ParseIP(cfg.IPAM.Start).To4())
@@ -147,7 +149,10 @@ func NewRegistry() (*ServiceRegistry, error) {
 		if ipamNext > ipamLast {
 			panic("Not enough ip addresses")
 		}
-		reg.createContainerUnsafe(service, intToIP4(ipamNext))
+		reg.createContainerUnsafe(
+			service,
+			intToIP4(ipamNext),
+			cfg.IP)
 		ipamNext++
 
 		reg.dnsMap[dnsutil.Fqdn(service.Host)] = service

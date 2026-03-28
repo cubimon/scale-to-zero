@@ -37,9 +37,9 @@ func (r *ServiceRegistry) evictLru(conn context.Context) {
 }
 
 func (r *ServiceRegistry) startJanitor() {
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(time.Duration(r.cfg.Janitor.PollInterval) * time.Second)
 	defer ticker.Stop()
-	idleTimeout := 30 * time.Second
+	idleTimeout := time.Duration(r.cfg.Janitor.Timeout) * time.Second
 
 	for {
 		select {

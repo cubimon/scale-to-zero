@@ -2,8 +2,6 @@
 
 DNS server and container orchestrator that starts/stops container on demand to keep memory use low.
 
-- set container dns server to this
-- ip autoassignment
 - proxy out of podman network (integrate services in ide/out of podman network for debugging)
 - integrate public dns like google
 - memory pressure
@@ -33,10 +31,12 @@ sudo nsenter -t $PID -n -i -u dlv debug --headless --listen=:2345 --api-version=
 
 ```bash
 sudo podman exec -it network-holder /bin/sh
+sudo podman exec -it orders-service-container /bin/sh
 # make dns server preload/start container on dns lookup
 dig @localhost orders-service
 # on direct http request (via proxy container ip) we also want to start the required container
-curl 172.20.0.15
+curl 172.20.0.3
+curl 172.20.0.5
 sudo podman container stop orders-service-container
 sudo podman container checkpoint --tcp-estblished inventory-service-container
 sudo podman container restore --tcp-established inventory-service-container

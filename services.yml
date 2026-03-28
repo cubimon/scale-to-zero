@@ -3,6 +3,9 @@ iface: "eth0"
 ipam:
   start: "172.20.0.3"
   end: "172.20.0.254"
+janitor:
+  poll_interval: 5
+  timeout: 120
 services:
   - image: "localhost/spring-service:latest"
     host: "orders-service"

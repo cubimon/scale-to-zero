@@ -116,7 +116,7 @@ func (r *ServiceRegistry) startContainerUnsafe(service *Service) error {
 	return nil
 }
 
-func (r *ServiceRegistry) createContainerUnsafe(service *Service, ipAddress string) error {
+func (r *ServiceRegistry) createContainerUnsafe(service *Service, containerIp, dnsIp string) error {
 	containerExists, _ := containers.Exists(r.conn, service.containerName(), nil)
 	if containerExists {
 		return nil
@@ -126,9 +126,12 @@ func (r *ServiceRegistry) createContainerUnsafe(service *Service, ipAddress stri
 	spec.Networks = map[string]nettypes.PerNetworkOptions{
 		"internal-proxy-net": {
 			StaticIPs: []net.IP{
-				net.ParseIP(ipAddress),
+				net.ParseIP(containerIp),
 			},
 		},
+	}
+	spec.DNSServers = []net.IP{
+		net.ParseIP(dnsIp),
 	}
 	spec.NetNS = specgen.Namespace{
 		NSMode: specgen.Bridge,
