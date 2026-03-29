@@ -31,11 +31,13 @@ func (r *ServiceRegistry) handleDNSQuestion(
 		service, exists := r.dnsMap[q.Header().Name]
 		if exists {
 			// preload on dns lookup
-			service.mu.Lock()
-			if service.state != StateStarted {
-				r.startContainerUnsafe(service)
+			if service.isContainerService() {
+				service.mu.Lock()
+				if service.state != StateStarted {
+					r.startContainerUnsafe(service)
+				}
+				service.mu.Unlock()
 			}
-			service.mu.Unlock()
 			// respond
 			rr, err := dns.New(fmt.Sprintf("%s 60 IN A %s", q.Header().Name, service.proxyIp))
 			if err == nil {

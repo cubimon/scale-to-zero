@@ -139,7 +139,7 @@ func NewRegistry() (*ServiceRegistry, error) {
 		}
 		service.proxyIp = intToIP4(ipamNext)
 		ipamNext++
-		service.containerIp = ""
+		service.containerIP = ""
 		service.activeCount = 0
 		service.lastActive = time.UnixMilli(0)
 		service.mu = sync.Mutex{}

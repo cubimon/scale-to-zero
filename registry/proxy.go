@@ -10,7 +10,18 @@ import (
 	"time"
 )
 
+func (sc *Service) remoteAddress() string {
+	remoteIP := sc.RemoteIP
+	if sc.isContainerService() {
+		remoteIP = sc.containerIP
+	}
+	return fmt.Sprintf("%s:%d", remoteIP, sc.RemotePort)
+}
+
 func (r *ServiceRegistry) startContainerAndWait(service *Service) {
+	if !service.isContainerService() {
+		return
+	}
 	service.mu.Lock()
 	if service.state == StateStarted {
 		service.mu.Unlock()
@@ -65,14 +76,9 @@ func (r *ServiceRegistry) startProxy() {
 		service := r.ipMap[ip]
 		r.markActive(service)
 		r.startContainerAndWait(service)
-		containerAddress := fmt.Sprintf("%s:%d", service.containerIp, service.ContainerPort)
-		target, _ := url.Parse("http://" + containerAddress)
+		remoteAddress := service.remoteAddress()
+		target, _ := url.Parse("http://" + remoteAddress)
 		proxy := httputil.NewSingleHostReverseProxy(target)
-		fmt.Println("waiting for tcp port to open up ", containerAddress)
-		err := r.waitForPort(containerAddress)
-		if err != nil {
-			return
-		}
 		service.mu.Lock()
 		service.activeCount += 1
 		service.mu.Unlock()

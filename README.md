@@ -2,7 +2,6 @@
 
 DNS server and container orchestrator that starts/stops container on demand to keep memory use low.
 
-- proxy out of podman network (integrate services in ide/out of podman network for debugging)
 - memory pressure
 - delete container/cleanup?
 

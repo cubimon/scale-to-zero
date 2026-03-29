@@ -14,7 +14,14 @@ func (sc *Service) containerName() string {
 	return sc.Host + "-container"
 }
 
+func (sc *Service) isContainerService() bool {
+	return sc.Image != ""
+}
+
 func (r *ServiceRegistry) updateContainerState(service *Service) error {
+	if !service.isContainerService() {
+		return nil
+	}
 	service.mu.Lock()
 	err := r.updateContainerStateUnsafe(service)
 	service.mu.Unlock()
@@ -22,6 +29,9 @@ func (r *ServiceRegistry) updateContainerState(service *Service) error {
 }
 
 func (r *ServiceRegistry) updateContainerStateUnsafe(service *Service) error {
+	if !service.isContainerService() {
+		return nil
+	}
 	containerExists, err := containers.Exists(r.conn, service.containerName(), nil)
 	if err != nil {
 		fmt.Println("Failed to check if container exists ", service.containerName())
@@ -44,7 +54,7 @@ func (r *ServiceRegistry) updateContainerStateUnsafe(service *Service) error {
 	for _, net := range report.NetworkSettings.Networks {
 		if net.IPAddress != "" {
 			fmt.Println("container ip address", net.IPAddress)
-			service.containerIp = net.IPAddress
+			service.containerIP = net.IPAddress
 		}
 	}
 	return nil
@@ -93,6 +103,9 @@ func (r *ServiceRegistry) startContainer(service *Service) error {
 }
 
 func (r *ServiceRegistry) startContainerUnsafe(service *Service) error {
+	if !service.isContainerService() {
+		return nil
+	}
 	if service.state == StateStarted || service.state == StateStarting {
 		return nil
 	}
@@ -116,7 +129,12 @@ func (r *ServiceRegistry) startContainerUnsafe(service *Service) error {
 	return nil
 }
 
-func (r *ServiceRegistry) createContainerUnsafe(service *Service, containerIp, dnsIp string) error {
+func (r *ServiceRegistry) createContainerUnsafe(
+	service *Service,
+	containerIp, dnsIp string) error {
+	if !service.isContainerService() {
+		return nil
+	}
 	containerExists, _ := containers.Exists(r.conn, service.containerName(), nil)
 	if containerExists {
 		return nil

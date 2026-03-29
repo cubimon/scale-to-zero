@@ -20,15 +20,16 @@ const (
 )
 
 type Service struct {
-	Image         string `yaml:"image"`
-	Host          string `yaml:"host"`
-	ContainerPort int    `yaml:"container_port"`
-	state         ServiceState
-	proxyIp       string
-	containerIp   string
-	activeCount   int
-	lastActive    time.Time
-	mu            sync.Mutex
+	Image       string `yaml:"image"`
+	Host        string `yaml:"host"`
+	RemoteIP    string `yaml:"remote_ip"`
+	RemotePort  int    `yaml:"remote_port"`
+	state       ServiceState
+	proxyIp     string
+	containerIP string
+	activeCount int
+	lastActive  time.Time
+	mu          sync.Mutex
 }
 
 type IPAM struct {

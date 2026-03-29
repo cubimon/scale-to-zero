@@ -5,13 +5,16 @@ ipam:
   end: "172.20.0.254"
 janitor:
   poll_interval: 5
-  timeout: 120
+  timeout: 3600
 dns:
   upstream: "8.8.8.8"
 services:
   - image: "localhost/spring-service:latest"
     host: "orders-service"
-    container_port: 8080
+    remote_port: 8080
   - image: "localhost/spring-service:latest"
     host: "inventory-service"
-    container_port: 8080
+    remote_port: 8080
+  - host: "file-system-service"
+    remote_ip: "172.20.0.1"
+    remote_port: 8000
