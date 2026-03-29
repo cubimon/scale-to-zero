@@ -70,7 +70,7 @@ func flushIPRange(ifaceName, rangeStart, rangeEnd string) error {
 		return err
 	}
 	rangeStartInt := binary.BigEndian.Uint32(net.ParseIP(rangeStart).To4())
-	rangeEndInt := binary.BigEndian.Uint32(net.ParseIP(rangeStart).To4())
+	rangeEndInt := binary.BigEndian.Uint32(net.ParseIP(rangeEnd).To4())
 	for _, addr := range addrs {
 		if !isAddrIPv4(addr) {
 			continue

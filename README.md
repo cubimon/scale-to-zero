@@ -29,9 +29,9 @@ sudo podman run -d --pod debug-pod --name network-holder alpine sleep infinity
 set PID $(sudo podman inspect network-holder --format '{{.State.Pid}}')
 
 # Run Delve inside the network namespace
-sudo nsenter -t $PID -n -i -u dlv debug --headless --listen=:2345 --api-version=2 main.go -- -mod=vendor
+sudo nsenter -t $PID -n -i -u dlv debug --headless --listen=:2345 --api-version=2 cmd/proxy/main.go -- -mod=vendor
 # I had some network issues on train, so I messed around with some parameters here:
-#sudo GOPROXY=off nsenter -t $PID -n -i -u dlv debug --headless --listen=:2345 --api-version=2 main.go -- -mod=vendor -tags "exclude_graphdriver_btrfs"
+#sudo GOPROXY=off nsenter -t $PID -n -i -u dlv debug --headless --listen=:2345 --api-version=2 cmd/proxy/main.go -- -mod=vendor -tags "exclude_graphdriver_btrfs"
 ```
 
 ```bash
