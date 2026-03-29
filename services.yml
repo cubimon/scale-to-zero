@@ -4,16 +4,312 @@ ipam:
   start: "172.20.0.3"
   end: "172.20.0.254"
 janitor:
-  poll_interval: 5
-  timeout: 3600
+  poll_interval: 60
+  timeout: 7200
+  pressure_trigger: "some 50000 1000000"
+  memory_threshold: 2048
 dns:
   upstream: "8.8.8.8"
 services:
   - image: "localhost/spring-service:latest"
-    host: "orders-service"
+    host: "service0"
     remote_port: 8080
   - image: "localhost/spring-service:latest"
-    host: "inventory-service"
+    host: "service1"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service2"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service3"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service4"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service5"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service6"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service7"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service8"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service9"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service10"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service11"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service12"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service13"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service14"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service15"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service16"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service17"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service18"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service19"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service20"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service21"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service22"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service23"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service24"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service25"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service26"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service27"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service28"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service29"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service30"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service31"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service32"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service33"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service34"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service35"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service36"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service37"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service38"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service39"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service40"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service41"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service42"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service43"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service44"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service45"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service46"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service47"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service48"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service49"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service50"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service51"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service52"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service53"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service54"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service55"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service56"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service57"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service58"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service59"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service60"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service61"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service62"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service63"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service64"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service65"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service66"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service67"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service68"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service69"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service70"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service71"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service72"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service73"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service74"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service75"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service76"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service77"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service78"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service79"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service80"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service81"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service82"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service83"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service84"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service85"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service86"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service87"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service88"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service89"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service90"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service91"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service92"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service93"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service94"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service95"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service96"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service97"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service98"
+    remote_port: 8080
+  - image: "localhost/spring-service:latest"
+    host: "service99"
     remote_port: 8080
   - host: "file-system-service"
     remote_ip: "172.20.0.1"

@@ -141,7 +141,7 @@ func NewRegistry() (*ServiceRegistry, error) {
 		ipamNext++
 		service.containerIP = ""
 		service.activeCount = 0
-		service.lastActive = time.UnixMilli(0)
+		service.lastActive = time.Now()
 		service.mu = sync.Mutex{}
 		reg.updateContainerState(service)
 
@@ -164,7 +164,8 @@ func NewRegistry() (*ServiceRegistry, error) {
 }
 
 func (r *ServiceRegistry) Start() {
-	go r.startJanitor()
+	go r.startTimeoutJanitor()
+	go r.startPressureJanitor()
 	go r.startDNS()
 	r.startProxy()
 }

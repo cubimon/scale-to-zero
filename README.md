@@ -2,9 +2,6 @@
 
 DNS server and container orchestrator that starts/stops container on demand to keep memory use low.
 
-- memory pressure
-- delete container/cleanup?
-
 ```bash
 sudo podman build -t=spring-service .
 ```
@@ -29,6 +26,7 @@ sudo podman run -d --pod debug-pod --name network-holder alpine sleep infinity
 set PID $(sudo podman inspect network-holder --format '{{.State.Pid}}')
 
 # Run Delve inside the network namespace
+sudo nsenter -t $PID -n -i -u go run cmd/proxy/main.go -mod=vendor
 sudo nsenter -t $PID -n -i -u dlv debug --headless --listen=:2345 --api-version=2 cmd/proxy/main.go -- -mod=vendor
 # I had some network issues on train, so I messed around with some parameters here:
 #sudo GOPROXY=off nsenter -t $PID -n -i -u dlv debug --headless --listen=:2345 --api-version=2 cmd/proxy/main.go -- -mod=vendor -tags "exclude_graphdriver_btrfs"
@@ -39,6 +37,8 @@ sudo podman exec -it network-holder /bin/sh
 sudo podman exec -it orders-service-container /bin/sh
 # make dns server preload/start container on dns lookup
 dig @localhost orders-service
+# stress test memory use (note: systemd-oom may kill other processes first)
+stress-ng --vm 4 --vm-bytes 16G --timeout 10s
 # on direct http request (via proxy container ip) we also want to start the required container
 curl 172.20.0.3
 curl 172.20.0.5

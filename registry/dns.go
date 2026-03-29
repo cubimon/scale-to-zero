@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 
 	"codeberg.org/miekg/dns"
 	"codeberg.org/miekg/dns/dnsutil"
@@ -32,6 +33,7 @@ func (r *ServiceRegistry) handleDNSQuestion(
 		if exists {
 			// preload on dns lookup
 			if service.isContainerService() {
+				r.markActive(service)
 				service.mu.Lock()
 				if service.state != StateStarted {
 					r.startContainerUnsafe(service)
@@ -46,8 +48,11 @@ func (r *ServiceRegistry) handleDNSQuestion(
 			return
 		}
 	}
-	fmt.Println("Unknown name " + q.Header().Name + ", forwarding now")
-	forwardDNSRequest(ctx, req, r, writer)
+	fmt.Println("Unknown name " + q.Header().Name)
+	if !strings.HasSuffix(q.Header().Name, ".home.") {
+		fmt.Println("Forwarding dns query")
+		forwardDNSRequest(ctx, req, r, writer)
+	}
 }
 
 func (r *ServiceRegistry) startDNS() {

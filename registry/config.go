@@ -38,8 +38,10 @@ type IPAM struct {
 }
 
 type Janitor struct {
-	PollInterval int `yaml:"poll_interval"`
-	Timeout      int `yaml:"timeout"`
+	PollInterval    int    `yaml:"poll_interval"`
+	Timeout         int    `yaml:"timeout"`
+	PressureTrigger string `yaml:"pressure_trigger"`
+	MemoryThreshold int    `yaml:"memory_threshold"`
 }
 
 type DNS struct {
