@@ -33,8 +33,8 @@ sudo podman network ls -q | xargs sudo podman network rm
 Initial setup, also to debug from IDE:
 
 ```bash
-sudo podman network create --subnet 172.20.0.0/24 --disable-dns internal-proxy-net
-sudo podman pod create --name debug-pod --network internal-proxy-net -p 80:80 -p 53:53/udp -p 2345:2345
+sudo podman network create --subnet 172.10.0.0/24 --disable-dns internal-proxy-net
+sudo podman pod create --name debug-pod --network internal-proxy-net -p 10080:10080 -p 10053:10053/udp -p 2345:2345
 sudo podman run -d --pod debug-pod --name network-holder alpine sleep infinity
 ```
 
@@ -61,8 +61,8 @@ dig @localhost orders-service
 # stress test memory use (note: systemd-oom may kill other processes first)
 stress-ng --vm 4 --vm-bytes 16G --timeout 10s
 # on direct http request (via proxy container ip) we also want to start the required container
-curl 172.20.0.3
-curl 172.20.0.5
+curl 172.10.0.3
+curl 172.10.0.5
 sudo podman container stop orders-service-container
 sudo podman container checkpoint --tcp-estblished inventory-service-container
 sudo podman container restore --tcp-established inventory-service-container

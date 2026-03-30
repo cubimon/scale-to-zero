@@ -87,5 +87,5 @@ func (r *ServiceRegistry) startProxy() {
 		service.activeCount -= 1
 		service.mu.Unlock()
 	})
-	log.Fatal(http.ListenAndServe("0.0.0.0:80", handler))
+	log.Fatal(http.ListenAndServe(r.cfg.Proxy.BindAddress, handler))
 }

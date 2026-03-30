@@ -1,15 +1,18 @@
-ip: "172.20.0.2"
+ip: "172.10.0.2"
 iface: "eth0"
 ipam:
-  start: "172.20.0.3"
-  end: "172.20.0.254"
+  start: "172.10.0.3"
+  end: "172.10.0.254"
 janitor:
   poll_interval: 60
   timeout: 7200
   pressure_trigger: "some 50000 1000000"
   memory_threshold: 2048
 dns:
+  bind_address: "0.0.0.0:10053"
   upstream: "8.8.8.8"
+proxy:
+  bind_address: "0.0.0.0:10080"
 services:
   - image: "localhost/spring-service:latest"
     host: "service0"
@@ -312,5 +315,5 @@ services:
     host: "service99"
     remote_port: 8080
   - host: "file-system-service"
-    remote_ip: "172.20.0.1"
+    remote_ip: "172.10.0.1"
     remote_port: 8000

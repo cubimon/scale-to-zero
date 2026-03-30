@@ -65,5 +65,5 @@ func (r *ServiceRegistry) startDNS() {
 		msg.Pack()
 		io.Copy(writer, msg)
 	})
-	log.Fatal((&dns.Server{Addr: ":53", Net: "udp"}).ListenAndServe())
+	log.Fatal((&dns.Server{Addr: r.cfg.DNS.BindAddress, Net: "udp"}).ListenAndServe())
 }

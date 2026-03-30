@@ -45,7 +45,12 @@ type Janitor struct {
 }
 
 type DNS struct {
-	Upstream string `yaml:"upstream"`
+	Upstream    string `yaml:"upstream"`
+	BindAddress string `yaml:"bind_address"`
+}
+
+type Proxy struct {
+	BindAddress string `yaml:"bind_address"`
 }
 
 type Config struct {
@@ -54,6 +59,7 @@ type Config struct {
 	IPAM     IPAM      `yaml:"ipam"`
 	Janitor  Janitor   `yaml:"janitor"`
 	DNS      DNS       `yaml:"dns"`
+	Proxy    Proxy     `yaml:"proxy"`
 	Services []Service `yaml:"services"`
 }
 

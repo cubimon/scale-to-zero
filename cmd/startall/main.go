@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	dnsServer := "127.0.0.1:53"
+	dnsServer := "127.0.0.1:10053"
 	resolver := &net.Resolver{
 		PreferGo: true,
 		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
